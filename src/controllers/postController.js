@@ -55,4 +55,177 @@ exports.getPostsById = async (req,res)=>{
     res.status(500).json({error:"failed to get post"})
     }
 
+};
+
+
+async function createPost(req,res){
+
+    const {title, content} = req.body;
+
+
+    if (!title || !content){
+
+        return res.status(400).json({error:"title and content required"})
+
+    }
+
+
+    try {
+
+        const post = await prisma.post.create({
+
+            data:{
+
+                title,
+                content,
+                published:false,
+                authorID:req.user.id,
+
+
+
+            },
+            include:{
+
+                author:{select:{id:true,username:true,email:true}}
+
+            },
+
+
+        });
+
+
+
+    }catch(err){
+
+        console.log(err)
+        return res.staus(500).json({error:'failed to get post'})
+
+    }
+
 }
+
+
+async function updatePost(req, res) {
+  const id = Number(req.params.id);
+  const { title, content } = req.body;
+
+  try {
+    const existing = await prisma.post.findUnique({ where: { id } });
+    if (!existing) return res.status(404).json({ error: "Post not found" });
+
+    const isOwner = existing.authorId === req.user.id;
+    const isAdmin = req.user.role === "ADMIN";
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    const updated = await prisma.post.update({
+      where: { id },
+      data: { title, content },
+    });
+
+    res.json(updated);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to update post" });
+  }}
+
+  async function togglePublish(req,res){
+
+    const id = Number(req.params.id)
+
+    try{
+
+        const existing = await prisma.post.findUnique({where: {id}})
+
+        if(!existing){
+
+            return res.status(404).json({error:"post not found"})
+        }
+
+        const isOwner = existing.authorId === req.user.id;
+        const isAdmin = req.user.role === "ADMIN";
+
+        if (!isOwner && !isAdmin) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+
+    const updated = await prisma.post.update({
+
+        where:{id},
+        data:{published: !existing.published},
+
+    })
+
+    res.json(updated)
+
+
+    }catch(err){
+
+    console.log(err)
+    res.status(500).json({error:"fail"})
+
+    }
+  }
+
+  async function deletePost(req,res){
+
+
+    const id = Number(req.params.id) //post id
+
+    try {
+
+
+        const existing = await prisma.post.findUnique({where: {id}})
+
+        const isOwner = req.user.id === existing.id;
+        const isAdmin = req.user.role === "ADMIN"
+
+        if (!isOwner && !isAdmin){
+
+            return res.status(403).json({error:"forbidden"})
+
+        }
+
+
+        const del = await prisma.post.delete({
+
+            where:{id}
+
+        })
+
+
+        res.json({message:"post deleted successfully"})
+
+
+
+
+    }catch(err){
+
+        res.status(500).json({error:"failed to delete"})
+    
+    }
+
+
+
+
+
+
+
+
+
+
+  }
+
+
+  module.exports = {
+
+  createPost,
+  updatePost,
+  togglePublish,
+  deletePost,
+
+
+
+  }
