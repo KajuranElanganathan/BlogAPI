@@ -74,4 +74,4 @@ function requireRole(...roles){
 
 }
 
-module.export = {authenticate,requireRole}
+module.exports = {authenticate,requireRole}

@@ -1,5 +1,6 @@
 const primsa = require("../util/db")
 
+//remember to add validation to the comments after, 
 
 
 //get comments
@@ -169,5 +170,6 @@ module.exports = {
   getComments,
   createComment,
   updateComment,
-  deleteComments,
+  deleteComment,
 };
+

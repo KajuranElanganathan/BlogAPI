@@ -11,7 +11,7 @@ const {
 const {authenticate} = require ("../middleware/auth")
 
 
-const router = express.router();
+const router = express.Router();
 
 //public
 router.get("/posts/:id/comments", getComments);
