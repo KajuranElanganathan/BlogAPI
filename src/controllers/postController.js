@@ -1,6 +1,6 @@
-const prisma = require("../util.js/db")
+const prisma = require("../util/db")
 
-exports.getPosts = async (req,res)=>{
+async function getPosts(req,res){
 
 try {
 
@@ -24,20 +24,20 @@ try {
 
 }};
 
-exports.getPostsById = async (req,res)=>{
+async function getPostsById (req,res) {
 
   const postId = parseInt(req.params.id);
     try {
         const post = await prisma.post.findUnique({
 
-            where:{id:postID},
+            where:{id:postId},
             include:{
                 author:{
                     select:{id:true,username:true,email:true},
                 },
-                comment:{
+                comments:{
                     where:{status:"VISIBLE"},
-                    orderBy:{CreatedAt: "desc"},
+                    orderBy:{createdAt: "desc"},
                 },
             },
         })
@@ -79,7 +79,7 @@ async function createPost(req,res){
                 title,
                 content,
                 published:false,
-                authorID:req.user.id,
+                authorId:req.user.id,
 
 
 
@@ -93,12 +93,12 @@ async function createPost(req,res){
 
         });
 
-
+    res.status(201).json(post)
 
     }catch(err){
 
         console.log(err)
-        return res.staus(500).json({error:'failed to get post'})
+        return res.status(500).json({error:'failed to get post'})
 
     }
 
@@ -179,7 +179,7 @@ async function updatePost(req, res) {
 
         const existing = await prisma.post.findUnique({where: {id}})
 
-        const isOwner = req.user.id === existing.id;
+        const isOwner = req.user.id === existing.authorId;
         const isAdmin = req.user.role === "ADMIN"
 
         if (!isOwner && !isAdmin){
@@ -206,21 +206,13 @@ async function updatePost(req, res) {
         res.status(500).json({error:"failed to delete"})
     
     }
-
-
-
-
-
-
-
-
-
-
   }
 
 
   module.exports = {
-
+  
+  getPostsById,
+  getPosts,
   createPost,
   updatePost,
   togglePublish,
