@@ -5,13 +5,13 @@ const prisma = require("../util/db")
 //get comments
 async function getComments(req,res){
 
-    const postID = Number(req.params.id)
+    const postId = Number(req.params.id)
 
     try {
 
     const comments = await prisma.comment.findMany({
 
-        where: { postID: postID, status: "VISIBLE" },
+        where: { postId: postId, status: "VISIBLE" },
         orderBy: {createdAt: "desc"},
         include: {
             author: {select: {id:true,username:true,email:true}}
@@ -20,7 +20,7 @@ async function getComments(req,res){
     res.json(comments)
     }catch(err){
 
-        res.status(500).json({error:"failed to retrive comments"})
+        res.status(500).json({error:"failed to retrive comments"})// 500 for server error
 
     }
 
@@ -29,33 +29,34 @@ async function getComments(req,res){
 async function createComment(req,res){
 
 
-    const postID = Number(req.params.id)
+    const postId = Number(req.params.id)
 
     const {body,guestName,guestEmail} = req.body
 
     if (!body){
 
-        return res.status(500).json({error:"comment body cannot be empty"})
+        return res.status(400).json({error:"comment body cannot be empty"})// code 400 for missing fields
 
 
     }
-
 
     try {
     
         let data = {
 
             body,
-            postID
+            postId
 
         };
+        
 
         if (req.user){
             data.authorId = req.user.id
+
         }else{
 
-        if(!guestName || !guestEmail){
-            return res.status(500).json({error:"need guest email & guest name"})
+            if(!guestName || !guestEmail){
+                return res.status(400).json({error:"need guest email & guest name"})
 
         }
         data.guestName = guestName
@@ -90,7 +91,7 @@ async function updateComment(req,res){
 
         if(!existing){
 
-            return res.status(404).json({error:"couldn't find comment"})
+            return res.status(404).json({error:"couldn't find comment"}) //404 for not found
 
         }
 
@@ -101,7 +102,7 @@ async function updateComment(req,res){
         const isAdmin = req.user.role === "ADMIN";
 
         if (!isOwner && !isAdmin) {
-            return res.status(403).json({ error: "Forbidden" });
+            return res.status(403).json({ error: "Forbidden" }); //403 for forbidden
         }
 
 
@@ -133,7 +134,7 @@ async function deleteComment(req,res){
 
         if(!existing){
 
-            return res.status(500).json({error:"unable to find the comment"})
+            return res.status(404).json({error:"unable to find the comment"})
 
 
         }
@@ -144,7 +145,7 @@ async function deleteComment(req,res){
 
         if (!isAdmin && !isOwner){
 
-            return res.status(500).json({error:"unauthorized req"})
+            return res.status(403).json({error:"unauthorized req"})
 
 
         }
