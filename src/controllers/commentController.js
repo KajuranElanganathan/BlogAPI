@@ -31,7 +31,7 @@ async function createComment(req,res){
 
     const postId = Number(req.params.id)
 
-    const {body,guestName,guestEmail} = req.body
+    const {body} = req.body
 
     if (!body){
 
@@ -49,22 +49,21 @@ async function createComment(req,res){
 
         };
         
+    
+        
 
         if (req.user){
             data.authorId = req.user.id
 
         }else{
 
-            if(!guestName || !guestEmail){
-                return res.status(400).json({error:"need guest email & guest name"})
+            return res.status(400).json({error:"must be logged in to comment"})
 
         }
-        data.guestName = guestName
-        data.guestEmail = guestEmail
 
 
 
-        }
+        
 
         const comment = await prisma.comment.create({data});
         res.json(comment)

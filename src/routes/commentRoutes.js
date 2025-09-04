@@ -15,7 +15,7 @@ const router = express.Router();
 
 //public
 router.get("/posts/:id/comments", getComments);
-router.post("/posts/:id/comments", createComment);
+router.post("/posts/:id/comments",authenticate, createComment);
 
 //auth priv
 
