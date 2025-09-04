@@ -1,4 +1,5 @@
 const prisma = require("../util/db")
+const bcrypt = require("bcrypt")
 
 const jwt = require("jsonwebtoken")
 require('dotenv').config();
@@ -36,7 +37,7 @@ async function register(req,res){
 
  if (!email || !password) {
 
-    return res.status(500).json("Must enter in an email or password")
+    return res.status(400).json("Must enter in an email or password")
 
  }
 
@@ -51,9 +52,9 @@ async function register(req,res){
   try {
 
 
-    const exisiting = await prisma.post.findUnique({where:{email}})
+    const existing = await prisma.user.findUnique({where:{email}})
 
-    if(exiting){
+    if(existing){
         
         return res.status(400).json({error:"email already exists"})};
 
@@ -63,18 +64,18 @@ async function register(req,res){
 
     const passwordHash = await bcrypt.hash(password,10)
 
-    const user = await prisma.post.create({
+    const user = await prisma.user.create({
 
         data:{email,username,passwordHash}
 
 
     })
-    res.json(user);
+    res.status(201).json({ id: user.id, email: user.email, username: user.username });
 
   }catch(err){
 
     console.log(err)
-    res.staus(500).json({error:"registration failed"})
+    res.status(500).json({error:"registration failed"})
   }
 
 
@@ -93,15 +94,15 @@ if (!email || !password){return res.status(400).json({error:"need an email and p
 try{
 
 
-    const user = prisma.post.findUnique({where:{email}});
+    const user = await prisma.user.findUnique({where:{email}});
 
     if(!user){
 
-        return res.status(401).json({error:"invaid username or password"});
+        return res.status(401).json({error:"invalid username or password"});
 
     }
 
-    const valid = await bcrypt.hasg(password,user.passwordHash)
+    const valid = await bcrypt.compare(password,user.passwordHash)
 
 
     if(!valid){ return res.status(401).json({error:"invaid username or password"})}
@@ -111,23 +112,12 @@ try{
 
         {id:user.id,role: user.role},
         process.env.JWT_SECRET,
-        {expriesIn:"1h"}
-
-
-
-
-
-
-
-
-
-
-
+        {expiresIn:"1h"}
 
 
 
     );
-    res.json ({token})
+    res.json({token})
 
 
 
@@ -136,7 +126,7 @@ try{
 
 }catch(err){
     console.log(err)
-    res.status(401).json({error:"failed to login"});
+    res.status(500).json({error:"failed to login"});
 
 
 
@@ -146,3 +136,8 @@ try{
 
 
 }}
+
+module.exports = {getMe,register,login}
+
+
+

@@ -42,7 +42,7 @@ function authenticate(req,res,next){
 
     }catch(err){
 
-        res.status(401).json({error:'invalid or expired toke' })
+        return res.status(401).json({error:'invalid or expired toke' })
 
     }
 

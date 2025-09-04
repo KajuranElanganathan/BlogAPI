@@ -1,5 +1,4 @@
-const primsa = require("../util/db")
-
+const prisma = require("../util/db")
 //remember to add validation to the comments after, 
 
 
@@ -12,8 +11,8 @@ async function getComments(req,res){
 
     const comments = await prisma.comment.findMany({
 
-        where:{postID,status:"VISIBLE"},
-        orderBy: {createdBy: "desc"},
+        where: { postID: postID, status: "VISIBLE" },
+        orderBy: {createdAt: "desc"},
         include: {
             author: {select: {id:true,username:true,email:true}}
         },
@@ -36,7 +35,7 @@ async function createComment(req,res){
 
     if (!body){
 
-        return res.staus(500).json({error:"comment body cannot be empty"})
+        return res.status(500).json({error:"comment body cannot be empty"})
 
 
     }
@@ -56,7 +55,7 @@ async function createComment(req,res){
         }else{
 
         if(!guestName || !guestEmail){
-            return res.staus(500).json({error:"need guest email & guest name"})
+            return res.status(500).json({error:"need guest email & guest name"})
 
         }
         data.guestName = guestName
@@ -66,13 +65,13 @@ async function createComment(req,res){
 
         }
 
-        const comment = prisma.comment.create({data});
+        const comment = await prisma.comment.create({data});
         res.json(comment)
 
 
     }catch(err){
 
-        return res.staus(500).json({error:"failed to create comment"})
+        return res.status(500).json({error:"failed to create comment"})
 
     }
 
@@ -87,17 +86,17 @@ async function updateComment(req,res){
 
     try {
 
-        const exisitng = await prisma.comment.findUnique({where:{id}})
+        const existing = await prisma.comment.findUnique({where:{id}})
 
-        if(!exisitng){
+        if(!existing){
 
-            return res.status.json({error:"couldn't find comment"})
+            return res.status(404).json({error:"couldn't find comment"})
 
         }
 
 
 
-        const isOwner = exisitng.authorId === req.user.id; // add a question mark
+        const isOwner = existing.authorId === req.user.id; // add a question mark
 
         const isAdmin = req.user.role === "ADMIN";
 
@@ -107,19 +106,19 @@ async function updateComment(req,res){
 
 
 
-        const updated = prisma.comment.update({
+        const updated = await prisma.comment.update({
 
             where:{id},
             data:{body}
         })
 
 
-
+        res.json(updated);
     }catch(err){
 
-
+        res.status(500).json({ error: "failed to update comment" });
     }
-
+}
 
 
 async function deleteComment(req,res){
@@ -134,7 +133,7 @@ async function deleteComment(req,res){
 
         if(!existing){
 
-            res.status(500).json({error:"unable to find the comment"})
+            return res.status(500).json({error:"unable to find the comment"})
 
 
         }
@@ -145,7 +144,7 @@ async function deleteComment(req,res){
 
         if (!isAdmin && !isOwner){
 
-            res.status(500).json({error:"unauthorized req"})
+            return res.status(500).json({error:"unauthorized req"})
 
 
         }
@@ -163,7 +162,7 @@ async function deleteComment(req,res){
 
     }
     
-}}
+}
 
 
 module.exports = {
