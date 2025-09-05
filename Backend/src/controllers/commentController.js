@@ -50,7 +50,7 @@ async function createComment(req,res){
         };
         
     
-        
+       
 
         if (req.user){
             data.authorId = req.user.id
@@ -61,10 +61,7 @@ async function createComment(req,res){
 
         }
 
-
-
-        
-
+    
         const comment = await prisma.comment.create({data});
         res.json(comment)
 
