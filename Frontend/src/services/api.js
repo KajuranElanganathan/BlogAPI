@@ -32,3 +32,17 @@ export async function createComment(postID,comment,token = null) {
 
 
 }
+export async function loginUser(credentials) {
+  const res = await fetch(`${API_BASE}/user/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(credentials),
+  });
+
+  if (!res.ok) throw new Error("Login failed");
+
+  return res.json(); 
+
+}
+}
+
