@@ -7,12 +7,14 @@ const prisma = require("./util/db")
 const postRoutes = require("../src/routes/postRoutes")
 const commentRoutes = require("../src/routes/commentRoutes");
 const userRoutes = require("../src/routes/userRoutes")
+const postSpecialRoutes = require("../src/routes/userRoutesSpecial")
 
 
 
 app.use("/posts",postRoutes);
 app.use("/",commentRoutes);
 app.use('/user',userRoutes)
+app.use("/admin",postSpecialRoutes)
 
 app.get("/health", (req, res) => {
   res.json({ ok: true, service: "blog-api" });
