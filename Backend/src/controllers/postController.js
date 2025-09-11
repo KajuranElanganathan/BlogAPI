@@ -214,6 +214,24 @@ async function updatePost(req, res) {
     }
   }
 
+  async function getAllPosts(req,res){
+
+    try {   
+
+    const posts = await prisma.post.findMany({
+
+    orderBy:{createdAt: "desc"},
+    include:{   
+        author:{
+            select:{id:true,username:true,email:true},      
+        },
+    },
+    }); 
+    res.json(posts)
+}catch(err){
+    res.status(500).json({error:"failed to get posts"})
+}   
+  }
 
   module.exports = {
   
@@ -223,6 +241,7 @@ async function updatePost(req, res) {
   updatePost,
   togglePublish,
   deletePost,
+  getAllPosts
 
 
 
