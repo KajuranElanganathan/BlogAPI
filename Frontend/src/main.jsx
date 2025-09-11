@@ -1,12 +1,14 @@
 import { createRoot } from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import './index.css'  
 
 
 import App from "./App";
 import HomePage from "./pages/HomePage";
 import PostPage from "./pages/PostPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage";
+import LoginPage from "./pages/LoginPage.jsx"
 
 const router = createBrowserRouter([
   {
@@ -22,9 +24,10 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")).render(
-  <authProvider>
+  
+  <AuthProvider>
     <RouterProvider router={router} />
-  </authProvider>
+  </AuthProvider>
 );
 
 
