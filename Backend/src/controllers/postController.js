@@ -169,50 +169,35 @@ async function updatePost(req, res) {
     }
   }
 
-  async function deletePost(req,res){
+async function deletePost(req, res) {
+  const id = Number(req.params.id);
 
+  try {
+    const existing = await prisma.post.findUnique({ where: { id } });
+    if (!existing) return res.status(404).json({ error: "post not found" });
 
-    const id = Number(req.params.id) //post id
+    const isOwner = Number(req.user.id) === existing.authorId;
+    const isAdmin = req.user.role?.toUpperCase() === "ADMIN";
 
-    try {
-
-
-        const existing = await prisma.post.findUnique({where: {id}})
-
-        if(!existing){
-
-            return res.status(404).json({error:"post not found"})
-        }
-
-
-        const isOwner = req.user.id === existing.authorId;
-        const isAdmin = req.user.role === "ADMIN"
-
-        if (!isOwner && !isAdmin){
-
-            return res.status(403).json({error:"forbidden"})
-
-        }
-
-
-        const del = await prisma.post.delete({
-
-            where:{id}
-
-        })
-
-
-        res.json({message:"post deleted successfully"})
-
-
-
-
-    }catch(err){
-
-        res.status(500).json({error:"failed to delete"})
-    
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({ error: "forbidden" });
     }
+
+    // Delete all comments for the post first
+    await prisma.comment.deleteMany({ where: { postId: id } });
+
+    // Now delete the post
+    await prisma.post.delete({ where: { id } });
+
+    res.json({ message: "post deleted successfully" });
+  } catch (err) {
+    console.error("Delete post error:", err);
+    res.status(500).json({ error: "failed to delete" });
   }
+}
+
+
+
 
   async function getAllPosts(req,res){
 

@@ -28,7 +28,7 @@ function DashboardHome() {
 
   async function handleTogglePublish(id) {
     try {
-      await togglePublish(id);
+      await togglePublish(id, token);
       refreshPosts();
     } catch (err) {
       console.error(err);
@@ -39,7 +39,7 @@ function DashboardHome() {
   async function handleDelete(id) {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
     try {
-      await deletePost(id, token); // pass token
+      await deletePost(id, token);
       refreshPosts();
     } catch (err) {
       console.error(err);
@@ -47,28 +47,68 @@ function DashboardHome() {
     }
   }
 
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-gray-500 text-lg animate-pulse">Loading...</p>
+      </div>
+    );
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (error)
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-red-600 font-semibold">{error}</p>
+      </div>
+    );
 
   return (
-    <div>
-      <h2>Your Posts</h2>
-      <Link to="posts/create">+ New Post</Link>
-      <ul>
-        {posts.map((p) => (
-          <li key={p.id}>
-            <strong>{p.title}</strong>{" "}
-            {p.published ? "(Published)" : "(Draft)"}
-            {" - "}
-            <Link to={`posts/edit/${p.id}`}>Edit</Link>
-            <button onClick={() => handleTogglePublish(p.id)}>
-              {p.published ? "Unpublish" : "Publish"}
-            </button>{" "}
-            <button onClick={() => handleDelete(p.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+    <div className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-800">Your Posts</h2>
+          <Link
+            to="posts/create"
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+          >
+            + New Post
+          </Link>
+        </div>
+
+        <ul className="space-y-6">
+          {posts.map((p) => (
+            <li
+              key={p.id}
+              className="bg-white shadow-md rounded-lg p-6 flex justify-between items-center hover:shadow-lg transition"
+            >
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800">{p.title}</h3>
+                <p className="text-gray-500">{p.published ? "Published" : "Draft"}</p>
+              </div>
+
+              <div className="flex gap-2">
+                <Link
+                  to={`posts/edit/${p.id}`}
+                  className="text-blue-600 hover:underline font-medium"
+                >
+                  Edit
+                </Link>
+                <button
+                  onClick={() => handleTogglePublish(p.id)}
+                  className="px-3 py-1 rounded-md text-white bg-green-600 hover:bg-green-700 transition"
+                >
+                  {p.published ? "Unpublish" : "Publish"}
+                </button>
+                <button
+                  onClick={() => handleDelete(p.id)}
+                  className="px-3 py-1 rounded-md text-white bg-red-600 hover:bg-red-700 transition"
+                >
+                  Delete
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
