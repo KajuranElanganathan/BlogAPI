@@ -6,18 +6,35 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [user, setUser] = useState(null);
 
-  // Save token to localStorage whenever it changes
+
   useEffect(() => {
     if (token) {
       localStorage.setItem("token", token);
+
+      fetch("http://localhost:3000/user/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.json())
+        .then((data) => setUser(data))
+        .catch(() => setUser(null));
     } else {
       localStorage.removeItem("token");
+      setUser(null);
     }
   }, [token]);
 
-  const login = (newToken, userData) => {
+  const login = (newToken, userData = null) => {
     setToken(newToken);
-    setUser(userData);
+    if (userData) {
+      setUser(userData);
+    } else {
+      fetch("http://localhost:3000/user/me", {
+        headers: { Authorization: `Bearer ${newToken}` },
+      })
+        .then((res) => res.json())
+        .then((data) => setUser(data))
+        .catch(() => setUser(null));
+    }
   };
 
   const logout = () => {

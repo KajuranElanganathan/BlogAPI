@@ -1,15 +1,16 @@
 import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { loginUser } from "../services/api";
 import { useNavigate } from "react-router-dom";
+import { registerUser } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
-function LoginPage() {
+function RegisterPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -17,12 +18,12 @@ function LoginPage() {
     setLoading(true);
 
     try {
-      const { token, user } = await loginUser({ email, password });
-      login(token, user); // user can be null; context will fetch /me
+      const { token, user } = await registerUser({ name, email, password });
+      login(token, user);
       navigate("/"); // redirect to home
     } catch (err) {
-      setError("Invalid credentials");
-      console.log(err);
+      setError("Registration failed");
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -30,9 +31,17 @@ function LoginPage() {
 
   return (
     <div>
-      <h1>Login</h1>
+      <h1>Register</h1>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Name"
+          required
+        />
+        <br />
         <input
           type="email"
           value={email}
@@ -50,11 +59,11 @@ function LoginPage() {
         />
         <br />
         <button type="submit" disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
+          {loading ? "Registering..." : "Register"}
         </button>
       </form>
     </div>
   );
 }
 
-export default LoginPage;
+export default RegisterPage;

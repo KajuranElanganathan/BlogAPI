@@ -14,10 +14,16 @@ function DashboardLayout() {
 
   return (
     <div>
-      <h1>Dashboard</h1>
-      <Outlet /> 
+      <h2>Dashboard</h2>
+      <nav>
+        <Link to="/dashboard/home">Home</Link> |{" "}
+        <Link to="/dashboard/create">Create Post</Link>
+      </nav>
+      <hr />
+      <Outlet /> {/* ✅ nested pages render here */}
     </div>
   );
 }
+
 
 export default DashboardLayout;

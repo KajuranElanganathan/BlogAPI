@@ -7,8 +7,6 @@ function App() {
 
       <Header/>
       <nav style={{ marginBottom: "20px" }}>
-        <Link to="/">Home</Link>
-        <Link to = "/user/login">Login</Link>
       </nav>
 
       <main>

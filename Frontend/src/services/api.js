@@ -17,26 +17,25 @@ export async function getPostById(id) {
   return res.json();
 }
 
-export async function createComment(postID,comment,token = null) {
+export async function createComment(postId, comment, token) {
+  try {
+    const res = await fetch(`http://localhost:3000/posts/${postId}/comments`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`, 
+      },
+      body: JSON.stringify(comment),
+    });
 
-  const headers = { "Content-Type": "application/json" };
-  if (token)
-    { headers["Authorization"] = `Bearer ${token}`;
+    if (!res.ok) throw new Error("Failed to create comment");
+    return await res.json();
+  } catch (err) {
+    console.error(err);
+    throw err;
   }
-
-  const res = await fetch(`${API_BASE}/posts/${postID}/comments`, {
-    method: "POST",
-    headers,
-    body: JSON.stringify({ body: comment }),
-  });
-
-
-
-  if (!res.ok) throw new Error("Failed to create comment");
-  return res.json();
-
-
 }
+
 export async function loginUser(credentials) {
   const res = await fetch(`${API_BASE}/user/login`, {
     method: "POST",
@@ -67,18 +66,26 @@ export async function getAllPosts() {
   return res.json();
 }
 
-export async function createPost(data) {
-  const res = await fetch(`${API_BASE}/posts`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...authHeaders(),
-    },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error("Failed to create post");
-  return res.json();
+
+export async function createPost({ title, content }, token) {
+  try {
+    const res = await fetch("http://localhost:3000/posts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ title, content }),
+    });
+
+    if (!res.ok) throw new Error("Failed to create post");
+    return await res.json();
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
 }
+
 
 
 export async function updatePost(id, data) {
@@ -106,12 +113,32 @@ export async function togglePublish(id) {
 }
 
 export async function deletePost(id) {
+  const token = localStorage.getItem("token");
   const res = await fetch(`${API_BASE}/posts/${id}`, {
     method: "DELETE",
     headers: {
-      ...authHeaders(),
+      Authorization: `Bearer ${token}`,
     },
   });
   if (!res.ok) throw new Error("Failed to delete post");
   return res.json();
+}
+
+
+
+
+export async function registerUser({ name, email, password }) {
+  try {
+    const res = await fetch(`${API_BASE}/user/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password }),
+    });
+
+    if (!res.ok) throw new Error("Registration failed");
+    return await res.json();
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
 }

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAllPosts, togglePublish, deletePost } from "../../services/api";
+import { useAuth } from "../../context/AuthContext";
 
 function DashboardHome() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { token } = useAuth();
 
   useEffect(() => {
     refreshPosts();
@@ -37,13 +39,14 @@ function DashboardHome() {
   async function handleDelete(id) {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
     try {
-      await deletePost(id);
+      await deletePost(id, token); // pass token
       refreshPosts();
     } catch (err) {
       console.error(err);
-      alert("Failed to delete post");
+      alert("Failed to delete post: " + err.message);
     }
   }
+
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
@@ -51,14 +54,14 @@ function DashboardHome() {
   return (
     <div>
       <h2>Your Posts</h2>
-      <Link to="new">+ New Post</Link>
+      <Link to="posts/create">+ New Post</Link>
       <ul>
         {posts.map((p) => (
           <li key={p.id}>
             <strong>{p.title}</strong>{" "}
             {p.published ? "(Published)" : "(Draft)"}
             {" - "}
-            <Link to={`${p.id}/edit`}>Edit</Link>{" "}
+            <Link to={`posts/edit/${p.id}`}>Edit</Link>
             <button onClick={() => handleTogglePublish(p.id)}>
               {p.published ? "Unpublish" : "Publish"}
             </button>{" "}
