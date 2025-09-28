@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:3000"; //backend url
+const API_BASE = import.meta.env.VITE_API_URL;
 
 export async function getPosts() {
   const res = await fetch(`${API_BASE}/posts`);
@@ -19,7 +19,7 @@ export async function getPostById(id) {
 
 export async function createComment(postId, comment, token) {
   try {
-    const res = await fetch(`http://localhost:3000/posts/${postId}/comments`, {
+    const res = await fetch(`${API_BASE}/posts/${postId}/comments`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -46,9 +46,7 @@ export async function loginUser(credentials) {
   if (!res.ok) throw new Error("Login failed");
 
   return res.json(); 
-
 }
-
 
 function authHeaders() {
   const token = localStorage.getItem("token");
@@ -66,10 +64,9 @@ export async function getAllPosts() {
   return res.json();
 }
 
-
 export async function createPost({ title, content }, token) {
   try {
-    const res = await fetch("http://localhost:3000/posts", {
+    const res = await fetch(`${API_BASE}/posts`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -85,8 +82,6 @@ export async function createPost({ title, content }, token) {
     throw err;
   }
 }
-
-
 
 export async function updatePost(id, data) {
   const res = await fetch(`${API_BASE}/posts/${id}`, {
@@ -123,9 +118,6 @@ export async function deletePost(id) {
   if (!res.ok) throw new Error("Failed to delete post");
   return res.json();
 }
-
-
-
 
 export async function registerUser({ name, email, password }) {
   try {
