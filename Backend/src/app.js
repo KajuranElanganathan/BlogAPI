@@ -7,7 +7,8 @@ const cors = require("cors");
 // List of allowed origins
 const allowedOrigins = [
   "http://localhost:5173", // local development
-  "https://blog-9jsitvabl-kajuranelanganathans-projects.vercel.app" // Vercel frontend
+  "https://blog-9jsitvabl-kajuranelanganathans-projects.vercel.app",
+  "blog-api-kajuranelanganathans-projects.vercel.app" // Vercel frontend
 ];
 
 app.use(cors({
