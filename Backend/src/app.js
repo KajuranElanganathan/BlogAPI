@@ -4,6 +4,9 @@ const app = express();
 const prisma = require("./util/db");
 const cors = require("cors");
 
+
+console.log("DATABASE_URL from env:", process.env.DATABASE_URL);
+
 // List of allowed origins
 const allowedOrigins = [
   "http://localhost:5173", // local development
@@ -35,10 +38,12 @@ app.use("/", commentRoutes);
 app.use("/user", userRoutes);
 app.use("/admin", postSpecialRoutes);
 
+const PORT = process.env.PORT || 3000;
+
 app.get("/health", (req, res) => {
   res.json({ ok: true, service: "blog-api" });
 });
 
-app.listen("3000", () => console.log("Server running - port 3000"));
+app.listen(PORT, () => console.log("Server running - port 3000"));
 
 module.exports = app;
