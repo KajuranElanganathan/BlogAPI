@@ -10,7 +10,10 @@ console.log("DATABASE_URL from env:", process.env.DATABASE_URL);
 // List of allowed origins
 const allowedOrigins = [
   "http://localhost:5173", // local development
-  "https://blog-api-kajuranelanganathans-projects.vercel.app" // Vercel frontend
+  "https://blog-api-kajuranelanganathans-projects.vercel.app",
+
+  
+   // Vercel frontend
 ];
 
 app.use(cors({
@@ -44,6 +47,6 @@ app.get("/health", (req, res) => {
   res.json({ ok: true, service: "blog-api" });
 });
 
-app.listen(PORT, () => console.log("Server running - port 3000"));
+//app.listen(PORT, () => console.log("Server running - port 3000"));
 
 module.exports = app;
