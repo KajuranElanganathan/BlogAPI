@@ -47,6 +47,16 @@ app.get("/health", (req, res) => {
   res.json({ ok: true, service: "blog-api" });
 });
 
-//app.listen(PORT, () => console.log("Server running - port 3000"));
+const startServer = async () => {
+  try {
+    await prisma.$connect(); // optional but good to test DB connection
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  } catch (error) {
+    console.error("Server failed to start:", error);
+    process.exit(1);
+  }
+};
+
+startServer();
 
 module.exports = app;
