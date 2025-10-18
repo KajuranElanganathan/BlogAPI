@@ -1,17 +1,17 @@
 import { createContext, useContext, useState, useEffect } from "react";
 
+const API_BASE = import.meta.env.VITE_API_URL; // ✅ Use your env URL
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [user, setUser] = useState(null);
 
-
   useEffect(() => {
     if (token) {
       localStorage.setItem("token", token);
 
-      fetch("http://localhost:3000/user/me", {
+      fetch(`${API_BASE}/user/me`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())
@@ -28,7 +28,7 @@ export function AuthProvider({ children }) {
     if (userData) {
       setUser(userData);
     } else {
-      fetch("http://localhost:3000/user/me", {
+      fetch(`${API_BASE}/user/me`, {
         headers: { Authorization: `Bearer ${newToken}` },
       })
         .then((res) => res.json())
