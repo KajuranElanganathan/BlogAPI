@@ -134,3 +134,22 @@ export async function registerUser({ name, email, password }) {
     throw err;
   }
 }
+
+export async function requestAuthorUpgrade(token) {
+  const headers = {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : authHeaders()),
+  };
+
+  const res = await fetch(`${API_BASE}/user/upgrade`, {
+    method: "PATCH",
+    headers,
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Failed to request author upgrade: ${text || res.status}`);
+  }
+
+  return res.json();
+}

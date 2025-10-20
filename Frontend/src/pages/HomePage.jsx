@@ -194,9 +194,24 @@ function HomePage() {
             </Link>
           )}
         </div>
-    
+        <div className="relative z-10 mt-8 flex items-center justify-center">
+          <a
+            href="#"
+            className="inline-flex items-center gap-4 bg-gradient-to-r from-pink-600 to-violet-600 text-white px-6 py-3 rounded-full shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5 transition"
+            aria-label="Try the Author beta version for a limited time"
+            title="Try the Author beta version for a limited time"
+          >
+            <span className="inline-flex items-center px-2 py-1 bg-white/20 rounded-full text-sm font-medium tracking-wide">
+              BETA
+            </span>
+            <span className="font-semibold">Try Author Version — Limited time</span>
+            <span className="ml-2 text-xs bg-white/10 px-2 py-0.5 rounded-full">Free trial</span>
+          </a>
+        </div>
       </section>
     </div>
+    
+      
   );
 }
 

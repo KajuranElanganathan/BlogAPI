@@ -133,7 +133,31 @@ try{
 
 }}
 
-module.exports = {getMe,register,login}
+async function upgrade(req, res) {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    if (user.role === "AUTHOR" || user.role === "ADMIN") {
+      return res.status(400).json({ error: "User already has author or admin role" });
+    }
+
+    const updated = await prisma.user.update({
+      where: { id: userId },
+      data: { role: "AUTHOR" },
+      select: { id: true, email: true, username: true, role: true, createdAt: true },
+    });
+
+    res.json(updated);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to upgrade role" });
+  }
+}
+module.exports = {getMe,register,login,upgrade}
 
 
 
