@@ -37,15 +37,23 @@ export async function createComment(postId, comment, token) {
 }
 
 export async function loginUser(credentials) {
-  const res = await fetch(`${API_BASE}/user/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(credentials),
-  });
+  try {
+    const res = await fetch(`${API_BASE}/user/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(credentials),
+    });
 
-  if (!res.ok) throw new Error("Login failed");
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({ error: "Login failed" }));
+      throw new Error(errorData.error || "Login failed");
+    }
 
-  return res.json(); 
+    return res.json();
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
 }
 
 function authHeaders() {
@@ -97,38 +105,42 @@ export async function updatePost(id, data, token) {
   return res.json();
 }
 
-export async function togglePublish(id) {
+export async function togglePublish(id, token) {
+  const headers = {
+    ...(token ? { Authorization: `Bearer ${token}` } : authHeaders()),
+  };
   const res = await fetch(`${API_BASE}/posts/${id}/publish`, {
     method: "PATCH",
-    headers: {
-      ...authHeaders(),
-    },
+    headers,
   });
   if (!res.ok) throw new Error("Failed to toggle publish");
   return res.json();
 }
 
-export async function deletePost(id) {
-  const token = localStorage.getItem("token");
+export async function deletePost(id, token) {
+  const headers = {
+    ...(token ? { Authorization: `Bearer ${token}` } : authHeaders()),
+  };
   const res = await fetch(`${API_BASE}/posts/${id}`, {
     method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers,
   });
   if (!res.ok) throw new Error("Failed to delete post");
   return res.json();
 }
 
-export async function registerUser({ name, email, password }) {
+export async function registerUser({ username, email, password }) {
   try {
     const res = await fetch(`${API_BASE}/user/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ username, email, password }),
     });
 
-    if (!res.ok) throw new Error("Registration failed");
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({ error: "Registration failed" }));
+      throw new Error(errorData.error || "Registration failed");
+    }
     return await res.json();
   } catch (err) {
     console.error(err);

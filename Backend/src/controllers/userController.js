@@ -70,7 +70,17 @@ async function register(req,res){
 
 
     })
-    res.status(201).json({ id: user.id, email: user.email, username: user.username });
+    
+    const token = jwt.sign(
+        {id:user.id,role: user.role},
+        process.env.JWT_SECRET,
+        {expiresIn:"1h"}
+    );
+    
+    res.status(201).json({ 
+      token,
+      user: { id: user.id, email: user.email, username: user.username, role: user.role }
+    });
 
   }catch(err){
 

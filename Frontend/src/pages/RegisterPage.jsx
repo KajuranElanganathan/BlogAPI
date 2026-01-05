@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { registerUser } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
 function RegisterPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,11 +18,11 @@ function RegisterPage() {
     setLoading(true);
 
     try {
-      const { token, user } = await registerUser({ name, email, password });
+      const { token, user } = await registerUser({ username, email, password });
       login(token, user);
-      navigate("/"); // redirect to home
+      navigate("/");
     } catch (err) {
-      setError("Registration failed");
+      setError(err.message || "Registration failed");
       console.error(err);
     } finally {
       setLoading(false);
@@ -30,64 +30,88 @@ function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-10 px-4">
-      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
-          Create an Account
-        </h1>
+    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md">
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-transparent"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(120,119,198,0.2),transparent_70%)]"></div>
+        
+        <div className="relative z-10 p-8 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+          <h1 className="text-3xl font-bold mb-2 text-white">Create account</h1>
+          <p className="text-white/60 mb-8">Join the McMaster Student Hub</p>
 
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+          {error && (
+            <div className="mb-6 p-4 rounded-lg bg-red-500/20 border border-red-500/30 text-red-300 text-sm">
+              {error}
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Name"
-            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required
-          />
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="username" className="block text-sm font-medium text-white/70 mb-2">
+                Username
+              </label>
+              <input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="username"
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 text-white placeholder-white/30 backdrop-blur-xl"
+                required
+              />
+            </div>
 
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required
-          />
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-white/70 mb-2">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 text-white placeholder-white/30 backdrop-blur-xl"
+                required
+              />
+            </div>
 
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required
-          />
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-white/70 mb-2">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 text-white placeholder-white/30 backdrop-blur-xl"
+                required
+              />
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full py-3 rounded-md text-white font-semibold transition ${
-              loading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"
-            }`}
-          >
-            {loading ? "Registering..." : "Register"}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full py-3 rounded-lg font-semibold transition-all ${
+                loading
+                  ? "bg-white/10 text-white/50 cursor-not-allowed"
+                  : "bg-white text-[#0a0a0a] hover:bg-white/90 transform hover:scale-[1.02]"
+              }`}
+            >
+              {loading ? "Creating account..." : "Create account"}
+            </button>
+          </form>
 
-        <p className="text-center text-gray-500 mt-4">
-          Already have an account?{" "}
-          <span
-            onClick={() => navigate("/user/login")}
-            className="text-blue-600 hover:underline cursor-pointer"
-          >
-            Login
-          </span>
-        </p>
+          <p className="text-center text-white/60 mt-6 text-sm">
+            Already have an account?{" "}
+            <Link to="/user/login" className="text-purple-400 hover:text-purple-300 underline">
+              Sign in
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

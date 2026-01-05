@@ -20,35 +20,50 @@ function HomePage() {
 
   if (loading)
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-600">Loading posts...</p>
+      <div className="flex items-center justify-center min-h-screen bg-[#0a0a0a]">
+        <div className="text-center">
+          <div className="w-12 h-12 border-2 border-white/20 border-t-white/60 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white/60">Loading posts...</p>
+        </div>
       </div>
     );
 
   const isAuthorOrAdmin = user && (user.role === "ADMIN" || user.role === "AUTHOR");
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Editorial Header */}
-      <header className="border-b border-gray-200 bg-white">
-        <div className="max-w-4xl mx-auto px-6 py-16">
-          <h1 className="text-4xl md:text-5xl font-serif font-normal text-gray-900 mb-4 tracking-tight">
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
+      {/* Hero Section */}
+      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/20 to-transparent"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(120,119,198,0.3),transparent_50%)]"></div>
+        
+        <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
+          <h1 className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
             McMaster Student Hub
           </h1>
-          <p className="text-lg text-gray-600 font-light max-w-2xl">
+          <p className="text-xl md:text-2xl text-white/70 max-w-2xl mx-auto mb-8 leading-relaxed">
             A centralized platform where student-run organizations share events, updates, and stories with the campus community.
           </p>
+          {isAuthorOrAdmin && (
+            <Link
+              to="/dashboard/posts/create"
+              className="inline-block px-8 py-4 bg-white text-[#0a0a0a] rounded-lg font-semibold hover:bg-white/90 transition-all transform hover:scale-105"
+            >
+              Create Post
+            </Link>
+          )}
         </div>
-      </header>
+      </section>
 
       {/* Category Navigation */}
       {categories.length > 0 && (
-        <nav className="border-b border-gray-200 bg-gray-50">
-          <div className="max-w-4xl mx-auto px-6 py-4">
+        <nav className="sticky top-0 z-40 backdrop-blur-xl bg-black/40 border-b border-white/10">
+          <div className="max-w-6xl mx-auto px-6 py-4">
             <div className="flex flex-wrap gap-3">
               <Link
                 to="/"
-                className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-white rounded transition"
+                className="px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-all backdrop-blur-sm"
               >
                 All Posts
               </Link>
@@ -56,7 +71,7 @@ function HomePage() {
                 <Link
                   key={category}
                   to={`/clubs/${encodeURIComponent(category)}`}
-                  className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-white rounded transition"
+                  className="px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-all backdrop-blur-sm"
                 >
                   {category}
                 </Link>
@@ -67,57 +82,52 @@ function HomePage() {
       )}
 
       {/* Posts Feed */}
-      <main className="max-w-4xl mx-auto px-6 py-12">
+      <main className="max-w-6xl mx-auto px-6 py-16">
         {posts.length === 0 ? (
-          <div className="text-center py-16">
-            <p className="text-gray-500 text-lg">No posts available yet.</p>
-            {isAuthorOrAdmin && (
-              <Link
-                to="/dashboard/posts/create"
-                className="inline-block mt-4 text-gray-900 hover:underline"
-              >
-                Create the first post
-              </Link>
-            )}
+          <div className="text-center py-20">
+            <div className="inline-block p-8 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+              <p className="text-white/60 text-lg mb-4">No posts available yet.</p>
+              {isAuthorOrAdmin && (
+                <Link
+                  to="/dashboard/posts/create"
+                  className="inline-block px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all border border-white/20"
+                >
+                  Create the first post
+                </Link>
+              )}
+            </div>
           </div>
         ) : (
-          <div className="space-y-12">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (
               <article
                 key={post.id}
-                className="border-b border-gray-200 pb-12 last:border-b-0"
+                className="group relative p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 transition-all hover:transform hover:scale-[1.02]"
               >
                 {post.category && (
                   <Link
                     to={`/clubs/${encodeURIComponent(post.category)}`}
-                    className="inline-block mb-3 text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-900 transition"
+                    className="inline-block mb-3 text-xs font-semibold text-purple-400 uppercase tracking-wider"
                   >
                     {post.category}
                   </Link>
                 )}
-                <h2 className="text-3xl md:text-4xl font-serif font-normal text-gray-900 mb-4 tracking-tight">
-                  <Link
-                    to={`/posts/${post.id}`}
-                    className="hover:text-gray-600 transition"
-                  >
+                <h2 className="text-2xl font-bold mb-3 text-white group-hover:text-purple-300 transition-colors">
+                  <Link to={`/posts/${post.id}`}>
                     {post.title}
                   </Link>
                 </h2>
-                <div className="prose prose-gray max-w-none mb-6">
-                  <p className="text-gray-700 leading-relaxed text-lg">
-                    {post.content.length > 300
-                      ? post.content.slice(0, 300) + "..."
-                      : post.content}
-                  </p>
-                </div>
-                <div className="flex items-center gap-4 text-sm text-gray-500">
+                <p className="text-white/60 mb-4 line-clamp-3 leading-relaxed">
+                  {post.content.length > 150
+                    ? post.content.slice(0, 150) + "..."
+                    : post.content}
+                </p>
+                <div className="flex items-center justify-between text-sm text-white/40 mb-4">
                   <span>{post.author?.username || "Unknown"}</span>
-                  <span>•</span>
                   <time>
                     {post.createdAt
                       ? new Date(post.createdAt).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
+                          month: "short",
                           day: "numeric",
                         })
                       : ""}
@@ -125,32 +135,16 @@ function HomePage() {
                 </div>
                 <Link
                   to={`/posts/${post.id}`}
-                  className="inline-block mt-4 text-gray-900 font-medium hover:underline"
+                  className="inline-flex items-center text-white/70 hover:text-white transition-colors group/link"
                 >
-                  Read more →
+                  Read more
+                  <span className="ml-2 group-hover/link:translate-x-1 transition-transform">→</span>
                 </Link>
               </article>
             ))}
           </div>
         )}
       </main>
-
-      {/* Footer CTA */}
-      {isAuthorOrAdmin && (
-        <footer className="border-t border-gray-200 bg-gray-50 mt-16">
-          <div className="max-w-4xl mx-auto px-6 py-12 text-center">
-            <p className="text-gray-700 mb-4">
-              Share your organization's updates with the campus community.
-            </p>
-            <Link
-              to="/dashboard/posts/create"
-              className="inline-block px-6 py-3 bg-gray-900 text-white hover:bg-gray-800 transition text-sm font-medium"
-            >
-              Write a Post
-            </Link>
-          </div>
-        </footer>
-      )}
     </div>
   );
 }
