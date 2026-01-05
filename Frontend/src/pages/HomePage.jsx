@@ -5,6 +5,8 @@ import { ArrowLeft, Home } from "lucide-react";
 import { getPosts } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { useHome } from "../context/HomeContext";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 function HomePage() {
   const [posts, setPosts] = useState([]);
@@ -199,28 +201,31 @@ function HomePage() {
                   </motion.p>
 
                   {/* CTA Button */}
-                  <motion.button
+                  <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.2, ease: [0.4, 0, 0.2, 1] }}
-                    onClick={() => {
-                      setShowPosts(true);
-                      setTimeout(() => {
-                        postsRef.current?.scrollIntoView({ behavior: 'smooth' });
-                      }, 100);
-                    }}
-                    className="group relative px-12 py-5 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white text-lg font-semibold hover:bg-white/20 transition-all duration-300 overflow-hidden"
                   >
-                    <span className="relative z-10 flex items-center gap-2">
-                      Show Posts
-                    </span>
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20"
-                      initial={{ x: "-100%" }}
-                      whileHover={{ x: "100%" }}
-                      transition={{ duration: 0.6 }}
-                    />
-                  </motion.button>
+                    <Button
+                      variant="glass"
+                      size="lg"
+                      onClick={() => {
+                        setShowPosts(true);
+                        setTimeout(() => {
+                          postsRef.current?.scrollIntoView({ behavior: 'smooth' });
+                        }, 100);
+                      }}
+                      className="group relative overflow-hidden"
+                    >
+                      <span className="relative z-10">Show Posts</span>
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20"
+                        initial={{ x: "-100%" }}
+                        whileHover={{ x: "100%" }}
+                        transition={{ duration: 0.6 }}
+                      />
+                    </Button>
+                  </motion.div>
                 </div>
 
                 {/* Right Side - Abstract 3D Asset (Partially Off-Screen) */}
@@ -282,7 +287,7 @@ function HomePage() {
                 {posts.length > 0 ? (
                   <div className="columns-1 md:columns-2 lg:columns-3 gap-6">
                     {posts.map((post, index) => (
-                      <motion.article
+                      <motion.div
                         key={post.id}
                         initial={{ opacity: 0, y: 50 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -293,53 +298,42 @@ function HomePage() {
                           delay: index * 0.08,
                         }}
                         className="break-inside-avoid mb-6"
+                        whileHover={{ scale: 1.02 }}
                       >
-                        <Link
-                          to={`/posts/${post.id}`}
-                          className="group relative block p-6 rounded-2xl bg-white/[0.02] backdrop-blur-md border border-white/10 hover:border-white/20 transition-all duration-300 hover:scale-[1.02]"
-                          style={{
-                            backdropFilter: 'blur(16px) saturate(180%)',
-                            WebkitBackdropFilter: 'blur(16px) saturate(180%)',
-                            boxShadow: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.05), 0 20px 40px -10px rgba(0, 0, 0, 0.3)',
-                          }}
-                        >
-                          {/* Inner shadow for thick glass effect */}
-                          <div 
-                            className="absolute inset-0 rounded-2xl pointer-events-none"
-                            style={{
-                              boxShadow: 'inset 0 1px 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 1px 0 rgba(0, 0, 0, 0.2)',
-                            }}
-                          ></div>
-                          
-                          {/* Card Glow Effect */}
-                          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-500/0 via-purple-500/0 to-blue-500/0 group-hover:from-purple-500/10 group-hover:via-purple-500/5 group-hover:to-blue-500/10 transition-all opacity-0 group-hover:opacity-100"></div>
-                          
-                          <div className="relative z-10">
-                            {post.category && (
-                              <span className="inline-block mb-4 px-3 py-1 rounded-full text-xs font-semibold text-purple-400 bg-purple-500/20 border border-purple-500/30">
-                                {post.category}
-                              </span>
-                            )}
-                            <h2 className="text-2xl font-bold mb-3 text-white group-hover:text-purple-300 transition-colors line-clamp-2">
-                              {post.title}
-                            </h2>
-                            <p className="text-white/60 mb-6 line-clamp-4 leading-relaxed">
-                              {post.content}
-                            </p>
-                            <div className="flex items-center justify-between text-sm text-white/40 pt-4 border-t border-white/10">
-                              <span>{post.author?.username || "Unknown"}</span>
-                              <time>
-                                {post.createdAt
-                                  ? new Date(post.createdAt).toLocaleDateString("en-US", {
-                                      month: "short",
-                                      day: "numeric",
-                                    })
-                                  : ""}
-                              </time>
-                            </div>
-                          </div>
+                        <Link to={`/posts/${post.id}`} className="block">
+                          <Card className="group relative overflow-hidden hover:border-white/20 transition-all duration-300">
+                            {/* Card Glow Effect */}
+                            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-500/0 via-purple-500/0 to-blue-500/0 group-hover:from-purple-500/10 group-hover:via-purple-500/5 group-hover:to-blue-500/10 transition-all opacity-0 group-hover:opacity-100"></div>
+                            
+                            <CardHeader>
+                              {post.category && (
+                                <span className="inline-block mb-2 px-3 py-1 rounded-full text-xs font-semibold text-purple-400 bg-purple-500/20 border border-purple-500/30 w-fit">
+                                  {post.category}
+                                </span>
+                              )}
+                              <CardTitle className="text-white group-hover:text-purple-300 transition-colors line-clamp-2">
+                                {post.title}
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <p className="text-white/60 mb-6 line-clamp-4 leading-relaxed">
+                                {post.content}
+                              </p>
+                              <div className="flex items-center justify-between text-sm text-white/40 pt-4 border-t border-white/10">
+                                <span>{post.author?.username || "Unknown"}</span>
+                                <time>
+                                  {post.createdAt
+                                    ? new Date(post.createdAt).toLocaleDateString("en-US", {
+                                        month: "short",
+                                        day: "numeric",
+                                      })
+                                    : ""}
+                                </time>
+                              </div>
+                            </CardContent>
+                          </Card>
                         </Link>
-                      </motion.article>
+                      </motion.div>
                     ))}
                   </div>
                 ) : (
