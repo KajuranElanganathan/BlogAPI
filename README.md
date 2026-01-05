@@ -2,6 +2,8 @@
 
 A full-stack blog application where users can write, edit, and publish blog posts with secure authentication and comments. Built it to sharpen my backend engineering and deployment skills while learning how to build production-ready apps.
 
+link: https://blog-api-kajuranelanganathans-projects.vercel.app/
+
 
 ---
 
