@@ -60,7 +60,7 @@ async function getPostsById (req,res) {
 
 async function createPost(req,res){
 
-    const {title, content} = req.body;
+    const {title, content, category} = req.body;
 
 
     if (!title || !content){
@@ -78,6 +78,7 @@ async function createPost(req,res){
 
                 title,
                 content,
+                category: category || null,
                 published:false,
                 authorId:req.user.id,
 
@@ -107,7 +108,7 @@ async function createPost(req,res){
 
 async function updatePost(req, res) {
   const id = Number(req.params.id);
-  const { title, content } = req.body;
+  const { title, content, category } = req.body;
 
   try {
     const existing = await prisma.post.findUnique({ where: { id } });
@@ -121,7 +122,7 @@ async function updatePost(req, res) {
 
     const updated = await prisma.post.update({
       where: { id },
-      data: { title, content },
+      data: { title, content, category: category !== undefined ? category : existing.category },
     });
 
     res.json(updated);

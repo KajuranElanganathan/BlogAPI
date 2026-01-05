@@ -1,22 +1,27 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { getPosts } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
-function HomePage() {
+function ClubSectionPage() {
+  const { category } = useParams();
+  const decodedCategory = decodeURIComponent(category);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
   useEffect(() => {
     getPosts()
-      .then(setPosts)
+      .then((allPosts) => {
+        // Filter posts by category on the frontend
+        const filtered = allPosts.filter(
+          (post) => post.category === decodedCategory
+        );
+        setPosts(filtered);
+      })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
-  }, []);
-
-  // Extract unique categories from posts
-  const categories = [...new Set(posts.map(p => p.category).filter(Boolean))];
+  }, [decodedCategory]);
 
   if (loading)
     return (
@@ -29,48 +34,31 @@ function HomePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Editorial Header */}
+      {/* Section Header */}
       <header className="border-b border-gray-200 bg-white">
         <div className="max-w-4xl mx-auto px-6 py-16">
+          <Link
+            to="/"
+            className="inline-block mb-4 text-sm text-gray-500 hover:text-gray-900 transition"
+          >
+            ← Back to all posts
+          </Link>
           <h1 className="text-4xl md:text-5xl font-serif font-normal text-gray-900 mb-4 tracking-tight">
-            McMaster Student Hub
+            {decodedCategory}
           </h1>
-          <p className="text-lg text-gray-600 font-light max-w-2xl">
-            A centralized platform where student-run organizations share events, updates, and stories with the campus community.
+          <p className="text-lg text-gray-600 font-light">
+            Posts from {decodedCategory}
           </p>
         </div>
       </header>
-
-      {/* Category Navigation */}
-      {categories.length > 0 && (
-        <nav className="border-b border-gray-200 bg-gray-50">
-          <div className="max-w-4xl mx-auto px-6 py-4">
-            <div className="flex flex-wrap gap-3">
-              <Link
-                to="/"
-                className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-white rounded transition"
-              >
-                All Posts
-              </Link>
-              {categories.map((category) => (
-                <Link
-                  key={category}
-                  to={`/clubs/${encodeURIComponent(category)}`}
-                  className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-white rounded transition"
-                >
-                  {category}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </nav>
-      )}
 
       {/* Posts Feed */}
       <main className="max-w-4xl mx-auto px-6 py-12">
         {posts.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-gray-500 text-lg">No posts available yet.</p>
+            <p className="text-gray-500 text-lg">
+              No posts available for {decodedCategory} yet.
+            </p>
             {isAuthorOrAdmin && (
               <Link
                 to="/dashboard/posts/create"
@@ -87,14 +75,6 @@ function HomePage() {
                 key={post.id}
                 className="border-b border-gray-200 pb-12 last:border-b-0"
               >
-                {post.category && (
-                  <Link
-                    to={`/clubs/${encodeURIComponent(post.category)}`}
-                    className="inline-block mb-3 text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-900 transition"
-                  >
-                    {post.category}
-                  </Link>
-                )}
                 <h2 className="text-3xl md:text-4xl font-serif font-normal text-gray-900 mb-4 tracking-tight">
                   <Link
                     to={`/posts/${post.id}`}
@@ -134,25 +114,9 @@ function HomePage() {
           </div>
         )}
       </main>
-
-      {/* Footer CTA */}
-      {isAuthorOrAdmin && (
-        <footer className="border-t border-gray-200 bg-gray-50 mt-16">
-          <div className="max-w-4xl mx-auto px-6 py-12 text-center">
-            <p className="text-gray-700 mb-4">
-              Share your organization's updates with the campus community.
-            </p>
-            <Link
-              to="/dashboard/posts/create"
-              className="inline-block px-6 py-3 bg-gray-900 text-white hover:bg-gray-800 transition text-sm font-medium"
-            >
-              Write a Post
-            </Link>
-          </div>
-        </footer>
-      )}
     </div>
   );
 }
 
-export default HomePage;
+export default ClubSectionPage;
+

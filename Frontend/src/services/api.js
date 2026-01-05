@@ -64,7 +64,7 @@ export async function getAllPosts() {
   return res.json();
 }
 
-export async function createPost({ title, content }, token) {
+export async function createPost({ title, content, category }, token) {
   try {
     const res = await fetch(`${API_BASE}/posts`, {
       method: "POST",
@@ -72,7 +72,7 @@ export async function createPost({ title, content }, token) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ title, content }),
+      body: JSON.stringify({ title, content, category }),
     });
 
     if (!res.ok) throw new Error("Failed to create post");
@@ -83,13 +83,14 @@ export async function createPost({ title, content }, token) {
   }
 }
 
-export async function updatePost(id, data) {
+export async function updatePost(id, data, token) {
+  const headers = {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : authHeaders()),
+  };
   const res = await fetch(`${API_BASE}/posts/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      ...authHeaders(),
-    },
+    headers,
     body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error("Failed to update post");

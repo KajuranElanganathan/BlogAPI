@@ -4,11 +4,7 @@ import Header from "./components/Header";
 function App() {
   return (
     <div>
-
-      <Header/>
-      <nav style={{ marginBottom: "20px" }}>
-      </nav>
-
+      <Header />
       <main>
         <Outlet />
       </main>

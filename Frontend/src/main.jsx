@@ -8,6 +8,7 @@ import RequireAuth from "./components/RequireAuth";
 import App from "./App";
 import HomePage from "./pages/HomePage";
 import PostPage from "./pages/PostPage.jsx";
+import ClubSectionPage from "./pages/ClubSectionPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage";
 import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
@@ -25,7 +26,8 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       { index: true, element: <HomePage /> },     
-      { path: "posts/:id", element: <PostPage /> }, 
+      { path: "posts/:id", element: <PostPage /> },
+      { path: "clubs/:category", element: <ClubSectionPage /> },
       { path: "*", element: <NotFoundPage /> }, 
       { path: "user/login", element: <LoginPage /> },  
       { path: "user/register", element: <RegisterPage /> },  

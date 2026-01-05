@@ -81,9 +81,15 @@ function DashboardHome() {
             >
               <div>
                 <h3 className="text-xl font-semibold text-gray-800">{p.title}</h3>
-                <p className="text-gray-500">
-                  {p.published ? "Published" : "Draft"}
-                </p>
+                <div className="flex items-center gap-3 mt-1">
+                  <p className="text-gray-500 text-sm">{p.published ? "Published" : "Draft"}</p>
+                  {p.category && (
+                    <>
+                      <span className="text-gray-300">•</span>
+                      <span className="text-gray-500 text-sm">{p.category}</span>
+                    </>
+                  )}
+                </div>
               </div>
 
               <div className="flex gap-2">
