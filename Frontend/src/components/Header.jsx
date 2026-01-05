@@ -6,14 +6,15 @@ import { useHome } from "../context/HomeContext";
 
 function Header() {
   const { user, logout } = useAuth();
-  const homeContext = useHome();
-  const scrollToTop = homeContext?.scrollToTop;
+  const { scrollToTop } = useHome();
 
   const handleHomeClick = () => {
     if (scrollToTop && typeof scrollToTop === 'function') {
       scrollToTop();
     } else {
+      // Fallback: scroll to top and dispatch event
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.dispatchEvent(new CustomEvent('homeClick'));
     }
   };
 

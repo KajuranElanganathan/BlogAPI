@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Home } from "lucide-react";
@@ -22,17 +22,32 @@ function HomePage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleScrollToTop = () => {
+  const handleScrollToTop = useCallback(() => {
     setShowPosts(false);
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 100);
-  };
+  }, []);
+
+  // Listen for home click event as fallback
+  useEffect(() => {
+    const handleHomeClickEvent = () => {
+      handleScrollToTop();
+    };
+    window.addEventListener('homeClick', handleHomeClickEvent);
+    return () => window.removeEventListener('homeClick', handleHomeClickEvent);
+  }, [handleScrollToTop]);
 
   useEffect(() => {
-    setScrollToTop(() => handleScrollToTop);
-    return () => setScrollToTop(null);
-  }, [setScrollToTop]);
+    if (setScrollToTop) {
+      setScrollToTop(() => handleScrollToTop);
+    }
+    return () => {
+      if (setScrollToTop) {
+        setScrollToTop(null);
+      }
+    };
+  }, [setScrollToTop, handleScrollToTop]);
 
   if (loading)
     return (
@@ -152,12 +167,12 @@ function HomePage() {
               {/* Asymmetrical Layout - Content on Left */}
               <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-12 items-center">
                 {/* Left Side - Text Content */}
-                <div className="lg:pl-12">
+                <div className="lg:pl-12 overflow-visible">
                   <motion.h1
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
-                    className="text-7xl md:text-8xl lg:text-[10rem] font-black mb-8 leading-none tracking-tighter"
+                    className="text-7xl md:text-8xl lg:text-[10rem] font-black mb-8 leading-none tracking-tighter overflow-visible"
                     style={{
                       background: 'linear-gradient(135deg, #ffffff 0%, #e0e7ff 30%, #c7d2fe 60%, #a5b4fc 100%)',
                       WebkitBackgroundClip: 'text',
@@ -166,6 +181,9 @@ function HomePage() {
                       overflow: 'visible',
                       wordBreak: 'keep-all',
                       whiteSpace: 'nowrap',
+                      display: 'inline-block',
+                      width: 'auto',
+                      maxWidth: 'none',
                     }}
                   >
                     MacBlog
