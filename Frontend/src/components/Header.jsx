@@ -2,12 +2,19 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Home, LogOut, UserPlus, LogIn } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { useHome } from "../context/HomeContext";
 
 function Header() {
   const { user, logout } = useAuth();
+  const homeContext = useHome();
+  const scrollToTop = homeContext?.scrollToTop;
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const handleHomeClick = () => {
+    if (scrollToTop && typeof scrollToTop === 'function') {
+      scrollToTop();
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   return (
@@ -21,7 +28,7 @@ function Header() {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={scrollToTop}
+          onClick={handleHomeClick}
           className="flex items-center gap-2 text-sm font-medium text-white/70 hover:text-white transition-colors relative group px-4 py-2 rounded-lg hover:bg-white/5 backdrop-blur-sm"
         >
           <Home className="w-4 h-4" />

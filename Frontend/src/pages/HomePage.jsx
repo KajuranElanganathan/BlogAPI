@@ -4,12 +4,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Home } from "lucide-react";
 import { getPosts } from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import { useHome } from "../context/HomeContext";
 
 function HomePage() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showPosts, setShowPosts] = useState(false);
   const { user } = useAuth();
+  const { setScrollToTop } = useHome();
   const heroRef = useRef(null);
   const postsRef = useRef(null);
 
@@ -20,10 +22,17 @@ function HomePage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const handleScrollToTop = () => {
     setShowPosts(false);
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
   };
+
+  useEffect(() => {
+    setScrollToTop(() => handleScrollToTop);
+    return () => setScrollToTop(null);
+  }, [setScrollToTop]);
 
   if (loading)
     return (
@@ -154,6 +163,9 @@ function HomePage() {
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                       backgroundClip: 'text',
+                      overflow: 'visible',
+                      wordBreak: 'keep-all',
+                      whiteSpace: 'nowrap',
                     }}
                   >
                     MacBlog
@@ -241,7 +253,7 @@ function HomePage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  onClick={scrollToTop}
+                  onClick={handleScrollToTop}
                   className="mb-12 flex items-center gap-2 text-white/60 hover:text-white transition-colors group"
                 >
                   <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
